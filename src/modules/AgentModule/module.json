@@ -1,0 +1,13 @@
+{
+    "name": "AgentModule",
+    "alias": "agentmodule",
+    "description": "",
+    "keywords": [],
+    "order": 0,
+    "providers": [
+        "Modules\\AgentModule\\Providers\\AgentModuleServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

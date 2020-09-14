@@ -1,0 +1,13 @@
+{
+    "name": "GlobalParamModule",
+    "alias": "globalparammodule",
+    "description": "",
+    "keywords": [],
+    "order": 0,
+    "providers": [
+        "Modules\\GlobalParamModule\\Providers\\GlobalParamModuleServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

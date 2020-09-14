@@ -1,0 +1,25 @@
+{
+    "name": "nwidart/warehousemodule",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\WarehouseModule\\Providers\\WarehouseModuleServiceProvider"
+            ],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\WarehouseModule\\": ""
+        }
+    }
+}

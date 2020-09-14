@@ -1,0 +1,13 @@
+{
+    "name": "VendorModule",
+    "alias": "vendormodule",
+    "description": "",
+    "keywords": [],
+    "order": 0,
+    "providers": [
+        "Modules\\VendorModule\\Providers\\VendorModuleServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

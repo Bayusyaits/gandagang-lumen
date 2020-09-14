@@ -1,0 +1,192 @@
+stages:
+  - composer install
+  - docker build
+  - test
+  - security
+  - deploy
+
+variables:
+  MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+  MYSQL_USER: $MYSQL_USER
+  MYSQL_PASSWORD: $MYSQL_PASSWORD
+  MYSQL_DATABASE: $MYSQL_DATABASE
+  DB_HOST: mysql
+  DB_CONNECTION: mysql
+    
+composer:install:
+  image: composer
+  stage: composer install
+  script:
+  - cd src && composer install
+  artifacts:
+    paths:
+      - src/
+      - src/vendor/
+      - src/.env 
+    when: always
+
+docker:image:
+  stage: docker build
+  image: docker
+  only:
+    - tags
+  services:
+    - docker:dind
+  script:
+    - docker version
+    - docker build -t $CI_REGISTRY_IMAGE:latest .
+    # push only for tags
+    - docker tag $CI_REGISTRY_IMAGE:latest $CI_REGISTRY_IMAGE:$CI_BUILD_TAG
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    - docker push $CI_REGISTRY_IMAGE:$CI_BUILD_TAG
+  dependencies:
+    - composer:install
+  artifacts:
+    expire_in: 7 days
+    paths:
+      - vendor/
+      - .env
+      - phpunit.xml
+      
+unit_test:
+  stage: test
+  services:
+    - mysql:8.0.18
+  before_script:
+    - bash docs/docker/docker_install.sh > /dev/null
+    - cd src
+    - php -v
+  image: php:7.3.13
+  script:
+    - cp .env.example .env
+    - vendor/bin/phpunit
+  dependencies:
+    - composer:install
+
+codestyle:
+  stage: test
+  image: lorisleiva/laravel-docker
+  script:
+    - cd src && phpcs --extensions=php app
+  dependencies: []
+
+phpcs:
+  stage: test
+  before_script:
+    - bash docs/docker/docker_install.sh > /dev/null
+    - cd src
+    - php -v
+  image: php:7.3.13
+  script:
+    - test -f phpcs.phar || curl -L https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar -o phpcs.phar
+    - test -f phpcbf.phar || curl -L https://squizlabs.github.io/PHP_CodeSniffer/phpcbf.phar -o phpcbf.phar
+    - php phpcs.phar 
+  dependencies: []
+  cache:
+    paths:
+      - src/phpcs.phar
+
+phpcpd:
+  stage: test
+  before_script:
+    - bash docs/docker/docker_install.sh > /dev/null
+    - cd src
+    - php -v
+  image: php:7.3.13
+  script:
+    - test -f phpcpd.phar || curl -L https://phar.phpunit.de/phpcpd.phar -o phpcpd.phar
+    - php phpcpd.phar 
+  dependencies: []
+  cache:
+    paths:
+      - src/phpcpd.phar
+
+sensiolabs:
+  stage: security
+  before_script:
+    - bash docs/docker/docker_install.sh > /dev/null
+    - cd src
+  image: php:7.3.13
+  script:
+    - test -d security-checker || git clone https://github.com/sensiolabs/security-checker.git
+    - cd security-checker
+  dependencies:
+    - composer:install
+  cache:
+    paths:
+      - src/security-checker/
+
+
+deploy_staging:
+  stage: deploy
+  image: composer:latest
+  script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+    - mkdir -p ~/.ssh
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - composer global require --prefer-dist laravel/envoy=~1.0 --no-interaction --prefer-dist --quiet
+    - /tmp/vendor/bin/envoy run deploy --commit="$CI_COMMIT_SHA"
+  environment:
+    name: staging
+    url: https://staging-api.gandagang.com
+  when: manual
+  only:
+    - master
+      
+deploy_production:
+  stage: deploy
+  image: composer:latest
+  script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+    - mkdir -p ~/.ssh
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - composer global require --prefer-dist laravel/envoy=~1.0 --no-interaction --prefer-dist --quiet
+    - /tmp/vendor/bin/envoy run deploy --commit="$CI_COMMIT_SHA"
+  environment:
+    name: production
+    url: https://api.gandagang.com
+  when: manual
+  only:
+    - merge_requests
+
+k8s:prepare:
+  stage: deploy
+  image: ubuntu:18.04
+  only:
+    - tags
+  when: manual
+  before_script:
+    - apt update && apt install -y curl apt-transport-https
+    - curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+    - echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | tee -a /etc/apt/sources.list.d/kubernetes.list
+    - apt update
+    - apt install -y kubectl
+    - export
+  script:
+    - kubectl create secret docker-registry regcred --docker-server=$CI_REGISTRY_IMAGE --docker-username=$CI_DEPLOY_USER --docker-password=$CI_DEPLOY_PASSWORD  --docker-email=$GITLAB_USER_EMAIL
+    - kubectl create service loadbalancer gandagang-lumen --tcp=80:80 -o yaml --dry-run | kubectl apply -f -
+  environment:
+    name: production
+    url: https://api.gandagang.com  
+
+k8s:deploy:
+  stage: deploy
+  image: ubuntu:16.04
+  only:
+    - tags
+  before_script:
+    - apt update && apt install -y curl apt-transport-https
+    - curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+    - echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | tee -a /etc/apt/sources.list.d/kubernetes.list
+    - apt update
+    - apt install -y kubectl
+    - export
+  script:
+    - sed "s/VERSION/$CI_BUILD_TAG/" docs/kubernetes/deployment.yaml | kubectl apply -f -
+  environment:
+    name: production
+    url: https://api.gandagang.com

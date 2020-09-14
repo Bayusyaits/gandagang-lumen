@@ -1,0 +1,13 @@
+{
+    "name": "PostModule",
+    "alias": "postmodule",
+    "description": "",
+    "keywords": [],
+    "order": 0,
+    "providers": [
+        "Modules\\PostModule\\Providers\\PostModuleServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

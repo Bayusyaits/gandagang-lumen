@@ -1,0 +1,13 @@
+{
+    "name": "PartnerModule",
+    "alias": "partnermodule",
+    "description": "",
+    "keywords": [],
+    "order": 0,
+    "providers": [
+        "Modules\\PartnerModule\\Providers\\PartnerModuleServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

@@ -1,0 +1,25 @@
+{
+    "name": "nwidart/shippermodule",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\ShipperModule\\Providers\\ShipperModuleServiceProvider"
+            ],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\ShipperModule\\": ""
+        }
+    }
+}

@@ -1,0 +1,13 @@
+{
+    "name": "ListModule",
+    "alias": "listmodule",
+    "description": "",
+    "keywords": [],
+    "order": 0,
+    "providers": [
+        "Modules\\ListModule\\Providers\\ListModuleServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

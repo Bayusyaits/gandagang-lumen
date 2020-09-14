@@ -1,0 +1,13 @@
+{
+    "name": "AuthModule",
+    "alias": "authmodule",
+    "description": "",
+    "keywords": [],
+    "order": 0,
+    "providers": [
+        "Modules\\AuthModule\\Providers\\AuthModuleServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

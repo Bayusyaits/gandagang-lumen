@@ -1,0 +1,13 @@
+{
+    "name": "SellerModule",
+    "alias": "sellermodule",
+    "description": "",
+    "keywords": [],
+    "order": 0,
+    "providers": [
+        "Modules\\SellerModule\\Providers\\SellerModuleServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

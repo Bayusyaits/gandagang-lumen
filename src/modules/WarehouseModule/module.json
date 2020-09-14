@@ -1,0 +1,13 @@
+{
+    "name": "WarehouseModule",
+    "alias": "warehousemodule",
+    "description": "",
+    "keywords": [],
+    "order": 0,
+    "providers": [
+        "Modules\\WarehouseModule\\Providers\\WarehouseModuleServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

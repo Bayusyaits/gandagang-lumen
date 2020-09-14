@@ -1,0 +1,13 @@
+{
+    "name": "OrderModule",
+    "alias": "ordermodule",
+    "description": "",
+    "keywords": [],
+    "order": 0,
+    "providers": [
+        "Modules\\OrderModule\\Providers\\OrderModuleServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

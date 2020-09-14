@@ -1,0 +1,23 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: gandagang-lumen
+  name: gandagang-lumen
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gandagang-lumen
+  template:
+    metadata:
+      labels:
+        app: gandagang-lumen
+    spec:
+      containers:
+      - image: registry.gitlab.com/gandagang/gandagang-lumen:VERSION
+        imagePullPolicy: Always
+        name: gandagang-lumen
+      imagePullSecrets:
+      - name: regcred
+  

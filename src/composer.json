@@ -1,0 +1,88 @@
+{
+    "name": "laravel/lumen",
+    "description": "The Laravel Lumen Framework.",
+    "keywords": [
+        "framework",
+        "laravel",
+        "lumen"
+    ],
+    "license": "MIT",
+    "type": "project",
+    "require": {
+        "php": ">=7.3.12",
+        "aws/aws-sdk-php": "^3.128",
+        "barryvdh/laravel-debugbar": "^3.2",
+        "cviebrock/laravel-elasticsearch": "^4.1",
+        "doctrine/annotations": "^1.8",
+        "firebase/php-jwt": "^5.0",
+        "flipbox/lumen-generator": "^6.0",
+        "guzzlehttp/guzzle": "^6.5",
+        "illuminate/mail": "^6.7",
+        "illuminate/notifications": "^6.8",
+        "illuminate/redis": "^6.2",
+        "illuminate/support": "^6.8",
+        "laravel/lumen-framework": "6.2",
+        "laravel/lumen-installer": "^1.1",
+        "laravel/tinker": "^2.0",
+        "nwidart/laravel-modules": "^6.2",
+        "pda/pheanstalk": "^4.0",
+        "predis/predis": "^1.1",
+        "sentry/sentry-laravel": "1.5.0",
+        "true/punycode": "^2.1",
+        "vlucas/phpdotenv": "^3.3"
+    },
+    "require-dev": {
+        "beyondcode/laravel-dump-server": "^1.3",
+        "fzaninotto/faker": "^1.4",
+        "mockery/mockery": "^1.0",
+        "overtrue/phplint": "^1.2",
+        "phpunit/phpunit": "^7.0"
+    },
+    "autoload": {
+        "files": [
+            "libs/general_function.php",
+            "libs/variable_function.php",
+            "libs/alias.php",
+            "libs/api.php"
+        ],
+        "classmap": [
+            "database/seeds",
+            "database/factories"
+        ],
+        "exclude-from-classmap": [
+            "/Tests/",
+            "/test/",
+            "/tests/"
+        ],
+        "psr-4": {
+            "Libs\\": "libs/",
+            "Modules\\": "modules/",
+            "App\\": "app/"
+        },
+        "psr-0": {
+            "app": [
+                "app/Models"
+            ]
+        }
+    },
+    "autoload-dev": {
+        "classmap": [
+            "tests/"
+        ]
+    },
+    "scripts": {
+        "post-root-package-install": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ],
+        "post-create-project-cmd": [
+            "@php artisan key:generate"
+        ]
+    },
+    "config": {
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "optimize-autoloader": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
